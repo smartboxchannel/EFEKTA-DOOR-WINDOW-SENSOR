@@ -121,7 +121,7 @@ OR
 
 17. Capacitor 220UF 10V (C2) - https://ali.ski/h_HLkz
 
-18. 13. Capacitor 12PF 0603 (C3, C4) - https://ali.ski/avB9O
+18. Capacitor 12PF 0603 (C3, C4) - https://ali.ski/avB9O
 
 19. Capacitor 10UF 0603 (C7) - https://ali.ski/avB9O
 
