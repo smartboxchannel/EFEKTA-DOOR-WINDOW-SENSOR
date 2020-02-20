@@ -10,7 +10,11 @@ PayPal: altigraph@yandex.com
 
 Yandex Money: 4100140180242
 
-Also you can buy an assembled sensor(sensor with case, magnet with case) - 
+Also you can buy:
+
+fully assembled(only the reed switch) - $15.9
+
+fully assembled(reed switch, accelerometer, magnetic field sensor) - $19.9
 
 Contact: hello@efektalab.com
 
