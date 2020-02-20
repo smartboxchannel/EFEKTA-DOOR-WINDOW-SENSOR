@@ -12,7 +12,7 @@ Yandex Money: 4100140180242
 
 Also you can buy an assembled sensor(sensor with case, magnet with case) - 
 
-Contact: altigraph@yandex.com
+Contact: hello@efektalab.com
 
 Video: 
 
