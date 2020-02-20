@@ -127,6 +127,9 @@ OR
 
 20. Capacitor 1UF 0603 (C9) - https://ali.ski/avB9O
 
+---
+
+OMO Magnetics 6х10 (2) - https://ali.ski/YDlUk2
 
 ---
 
