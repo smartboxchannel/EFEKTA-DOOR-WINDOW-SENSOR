@@ -25,7 +25,7 @@ More info at http://efektalab.com/dws52 (still not working)
 
 1. (MC50SFA) nRF52811, nRF52810, nRF52832 (U1) - https://ali.ski/W6ErD
 
-2. lis2dw12 (U2) - https://ali.ski/h80NdJ
+2. lis2dw12 (U2) - optional - https://ali.ski/h80NdJ
 
 3. a. Reed Switch 2х14 (U3) - https://ali.ski/Uyxms
 
@@ -81,7 +81,57 @@ OR
 
 1. c. nRF 52840 E73-2G4M08S1C (U1) - https://ali.ski/dTdPtW
 
-2. FC-135 3215 3.2*1.5 32.768KHZ Resonator (U2) - https://ali.ski/HlFD9D
+2. lis2dw12 (U2) - optional - https://ali.ski/h80NdJ
+
+3. FC-135 3215 3.2*1.5 32.768KHZ Resonator (U2) - https://ali.ski/HlFD9D
+
+4. a. Reed Switch 2х14 (U3) - https://ali.ski/Uyxms
+
+OR
+
+4. b. Reed Switch 1.8х10 (U3) - https://ali.ski/WHlYoO
+
+OR
+
+4. c. Reed Switch 1.8х10 (U3) - https://ali.ski/4hPWm2
+
+5. CR2032 Holder (U4) - https://ali.ski/9lSL8n
+
+6. Micro Switch 2*4*3,5mm (U5,U6) - https://ali.ski/Q_WYyZ
+
+7. DRV5032FB (U8,U9) - optional
+
+8. RGB LED | SMD 0805 | RGBL | RGB LED - https://ali.ski/Dhf3R
+
+9. 0603 SMD 1/8W chip resistor 3.6K (R1) - https://ali.ski/WS2ae
+
+10. 0603 SMD 1/8W chip resistor 15K (R2) - https://ali.ski/WS2ae
+
+11. 0603 SMD 1/8W chip resistor 10K (R3,R6) - https://ali.ski/WS2ae
+
+12. 0603 SMD 1/8W chip resistor 5.1K (R4,R5) - https://ali.ski/WS2ae
+
+13. 0603 SMD 1/8W chip resistor 47K (R7) - https://ali.ski/WS2ae
+
+14. 0603 SMD 1/8W chip resistor 2M (R8) - https://ali.ski/WS2ae
+
+15. 2x3P | 6pin | 1.27mm | SMT | Pin Header Female (J1) - https://ali.ski/Dej0c
+
+16. Capacitor 100NF 0603 (C1, C5, C6, C8, C10) - https://ali.ski/avB9O
+
+17. Capacitor 220UF 10V (C2) - https://ali.ski/h_HLkz
+
+18. 13. Capacitor 12PF 0603 (C3, C4) - https://ali.ski/avB9O
+
+19. Capacitor 10UF 0603 (C7) - https://ali.ski/avB9O
+
+20. Capacitor 1UF 0603 (C9) - https://ali.ski/avB9O
+
+
+
+
+
+
 
 
 
