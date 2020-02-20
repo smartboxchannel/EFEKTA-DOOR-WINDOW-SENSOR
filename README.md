@@ -43,6 +43,49 @@ OR
 
 6. DRV5032FB (U7,U8) - optional
 
+7. RGB LED | SMD 0805 | RGBL | RGB LED - https://ali.ski/Dhf3R
+
+8. 0603 SMD 1/8W chip resistor 3.6K (R1) - https://ali.ski/WS2ae
+
+9. 0603 SMD 1/8W chip resistor 15K (R2) - https://ali.ski/WS2ae
+
+10. 0603 SMD 1/8W chip resistor 10K (R3,R6) - https://ali.ski/WS2ae
+
+11. 0603 SMD 1/8W chip resistor 5.1K (R4,R5) - https://ali.ski/WS2ae
+
+12. 0603 SMD 1/8W chip resistor 47K (R7) - https://ali.ski/WS2ae
+
+13. 0603 SMD 1/8W chip resistor 2M (R8) - https://ali.ski/WS2ae
+
+14. 2x3P | 6pin | 1.27mm | SMT | Pin Header Female (J1) - https://ali.ski/Dej0c
+
+15. Capacitor 100NF 0603 (C1, C3, C4, C6, C8) - https://ali.ski/avB9O
+
+16. Capacitor 220UF 10V (C2) - https://ali.ski/h_HLkz
+
+17. Capacitor 10UF 0603 (C5) - https://ali.ski/avB9O
+
+18. Capacitor 1UF 0603 (C7) - https://ali.ski/avB9O
+
+
+
+#### (E73 2G4M08S1C) nRF52840
+
+1. a. nRF 52840 E73-2G4M08S1C (U1) - https://ali.ski/dFb9B
+
+OR
+
+1. b. nRF 52840 E73-2G4M08S1C (U1) - https://ali.ski/Qsnwk
+
+OR
+
+1. c. nRF 52840 E73-2G4M08S1C (U1) - https://ali.ski/dTdPtW
+
+2. FC-135 3215 3.2*1.5 32.768KHZ Resonator (U2) - https://ali.ski/HlFD9D
+
+
+
+
 
 
 
