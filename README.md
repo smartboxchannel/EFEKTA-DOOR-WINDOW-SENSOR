@@ -128,6 +128,17 @@ OR
 20. Capacitor 1UF 0603 (C9) - https://ali.ski/avB9O
 
 
+---
+
+M1.4 4mm Round Head Micro Screws(4) - https://ali.ski/bmMZl
+
+---
+
+ANYCUBIC 405nm UV resin - https://ali.ski/-PtMA-
+
+
+
+
 
 
 
