@@ -2,7 +2,7 @@
 
 ## Reed Switch, LIS2DW12, DRV5032FB
 
-## nRF52811, nRF52840
+## (MC50SFA) nRF52811, nRF52810, nRF52832, (E73 2G4M08S1C) nRF52840
 
 #### If this project was useful to you, you can buy me a Cup of coffee :)
 
