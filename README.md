@@ -14,7 +14,7 @@ Also you can buy an assembled sensor(sensor with case, magnet with case) -
 
 Contact: hello@efektalab.com
 
-Video: 
+Video: https://youtu.be/4p1JGMze4s0
 
 More info at http://efektalab.com/dws52 (still not working)
 
