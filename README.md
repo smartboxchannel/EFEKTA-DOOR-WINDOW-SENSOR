@@ -73,7 +73,7 @@ OR
 
 
 
-#### (E73 2G4M08S1C) nRF52840
+#### (E73_2G4M08S1C) nRF52840
 
 1. a. nRF 52840 E73-2G4M08S1C (U1) - https://ali.ski/dFb9B
 
