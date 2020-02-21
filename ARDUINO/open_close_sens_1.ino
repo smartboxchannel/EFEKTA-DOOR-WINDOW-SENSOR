@@ -88,7 +88,7 @@ LIS2DW12Sensor *lis2;
 void before() {
   board_Init();
   happy_init();
-  delay(500);
+  delay(1000);
   batteryVoltage = hwCPUVoltage();
   digitalWrite(BLUE_LED, LOW);
 }
@@ -175,7 +175,7 @@ void presentation()
   }
   wait(200);
   sendBatteryStatus(0);
-  NRF_POWER->DCDCEN = 0;
+  NRF_POWER->DCDCEN = 1;
   wait(10);
 }
 
