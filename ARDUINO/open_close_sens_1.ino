@@ -1,33 +1,6 @@
-extern "C" {
-#include "app_gpiote.h"
-#include "nrf_gpio.h"
-}
-#define APP_GPIOTE_MAX_USERS 1
-#include <LIS2DW12Sensor.h>
-//#define MY_DEBUG
-#ifndef MY_DEBUG
-#define MY_DISABLED_SERIAL
-#endif
-#define MY_RADIO_NRF5_ESB
-int16_t mtwr;
-#define MY_TRANSPORT_WAIT_READY_MS (mtwr)
-#define MY_NRF5_ESB_PA_LEVEL (NRF5_PA_MAX)
-
-#include <MySensors.h>
-
-#define DWS_CHILD_ID 0
-#define V_SENS_CHILD_ID 1
-#define M_CHILD_ID 2
-#define SIGNAL_Q_ID 250
-
-MyMessage dwsMsg(DWS_CHILD_ID, V_TRIPPED);
-MyMessage mMsg(M_CHILD_ID, V_TRIPPED);
-MyMessage vibroMsg(V_SENS_CHILD_ID, V_TRIPPED);
-#define SN "DOOR & WINDOW SENS"
-#define SV "1.12"
-
+bool configMode = 0;
 int8_t int_status = 0;
-bool door_status;
+bool door_status = 1;
 bool check;
 bool magnet_status = 1;
 bool nosleep = 0;
@@ -44,6 +17,7 @@ bool Ack_FP;
 bool PRESENT_ACK;
 bool send_a;
 bool batt_flag;
+byte conf_vibro_set = 2;
 byte err_delivery_beat;
 byte problem_mode_count;
 uint8_t  countbatt = 0;
@@ -56,6 +30,7 @@ uint32_t oldmillis;
 uint32_t newmillis;
 uint32_t previousMillis;
 uint32_t lightMillisR;
+uint32_t configMillis;
 uint32_t interrupt_time;
 uint32_t SLEEP_TIME_W;
 uint32_t axel_time;
@@ -64,7 +39,6 @@ int16_t myid;
 int16_t mypar;
 int16_t old_mypar = -1;
 bool vibro = 1;
-static app_gpiote_user_id_t m_gpiote_user_id;
 uint32_t PIN_BUTTON_MASK;
 uint32_t AXEL_INT_MASK;
 uint32_t GERKON_INT_MASK;
@@ -82,13 +56,46 @@ volatile byte buttIntStatus = 0;
 uint16_t batteryVoltage;
 int16_t linkQuality;
 int16_t old_linkQuality;
+
+//#define MY_DEBUG
+#ifndef MY_DEBUG
+#define MY_DISABLED_SERIAL
+#endif
+#define MY_RADIO_NRF5_ESB
+int16_t mtwr;
+#define MY_TRANSPORT_WAIT_READY_MS (mtwr)
+#define MY_NRF5_ESB_PA_LEVEL (NRF5_PA_MAX)
+
+#include <MySensors.h>
+
+extern "C" {
+#include "app_gpiote.h"
+#include "nrf_gpio.h"
+}
+#define APP_GPIOTE_MAX_USERS 1
+static app_gpiote_user_id_t m_gpiote_user_id;
+
+#include <LIS2DW12Sensor.h>
 LIS2DW12Sensor *lis2;
+
+#define DWS_CHILD_ID 0
+#define V_SENS_CHILD_ID 1
+#define M_CHILD_ID 2
+#define LEVEL_SENSIV_V_SENS_CHILD_ID 230
+#define SIGNAL_Q_ID 250
+
+MyMessage dwsMsg(DWS_CHILD_ID, V_TRIPPED);
+MyMessage mMsg(M_CHILD_ID, V_TRIPPED);
+MyMessage vibroMsg(V_SENS_CHILD_ID, V_TRIPPED);
+MyMessage conf_vsensMsg(LEVEL_SENSIV_V_SENS_CHILD_ID, V_VAR1);
+#define SN "DOOR & WINDOW SENS"
+#define SV "1.12"
 
 
 void before() {
   board_Init();
   happy_init();
-  delay(1000);
+  delay(500);
   batteryVoltage = hwCPUVoltage();
   digitalWrite(BLUE_LED, LOW);
 }
@@ -105,7 +112,7 @@ void presentation()
     _transportSM.failedUplinkTransmissions = 0;
     wait(30);
     check = sendSketchInfo(SN, SV);
-    wait(60);
+    wait(30);
     _transportSM.failedUplinkTransmissions = 0;
   }
   if (check) {
@@ -120,7 +127,7 @@ void presentation()
     _transportSM.failedUplinkTransmissions = 0;
     wait(40);
     check = present(DWS_CHILD_ID, S_DOOR, "STATUS RS SENS");
-    wait(80);
+    wait(40);
     _transportSM.failedUplinkTransmissions = 0;
   }
   if (check) {
@@ -135,7 +142,7 @@ void presentation()
     _transportSM.failedUplinkTransmissions = 0;
     wait(50);
     check = present(V_SENS_CHILD_ID, S_VIBRATION, "STATUS SHOCK SENS");
-    wait(100);
+    wait(50);
     _transportSM.failedUplinkTransmissions = 0;
   }
   if (check) {
@@ -150,7 +157,7 @@ void presentation()
     _transportSM.failedUplinkTransmissions = 0;
     wait(60);
     check = present(M_CHILD_ID, S_DOOR, "ANTI-MAGNET ALARM");
-    wait(120);
+    wait(60);
     _transportSM.failedUplinkTransmissions = 0;
   }
   if (check) {
@@ -165,7 +172,7 @@ void presentation()
     _transportSM.failedUplinkTransmissions = 0;
     wait(70);
     check = present(SIGNAL_Q_ID, S_CUSTOM, "SIGNAL %");
-    wait(140);
+    wait(70);
     _transportSM.failedUplinkTransmissions = 0;
   }
   if (check) {
@@ -173,9 +180,37 @@ void presentation()
   } else {
     blinky(1, 1, RED_LED);
   }
-  wait(200);
-  sendBatteryStatus(0);
-  NRF_POWER->DCDCEN = 1;
+
+  check = present(LEVEL_SENSIV_V_SENS_CHILD_ID, S_CUSTOM, "SENS LEVEL VIBRO");
+  wait(80);
+  if (!check) {
+    _transportSM.failedUplinkTransmissions = 0;
+    wait(80);
+    check = present(LEVEL_SENSIV_V_SENS_CHILD_ID, S_CUSTOM, "SENS LEVEL VIBRO");
+    wait(80);
+    _transportSM.failedUplinkTransmissions = 0;
+  }
+  if (check) {
+    blinky(1, 1, BLUE_LED);
+  } else {
+    blinky(1, 1, RED_LED);
+  }
+
+  check = send(conf_vsensMsg.set(conf_vibro_set));
+  wait(90);
+  if (!check) {
+    _transportSM.failedUplinkTransmissions = 0;
+    wait(90);
+    check = send(conf_vsensMsg.set(conf_vibro_set));
+    wait(90);
+    _transportSM.failedUplinkTransmissions = 0;
+  }
+  if (check) {
+    blinky(1, 1, BLUE_LED);
+  } else {
+    blinky(1, 1, RED_LED);
+  }
+  NRF_POWER->DCDCEN = 0;
   wait(10);
 }
 
@@ -199,101 +234,136 @@ void loop() {
       if (flag_find_parent_process == 1) {
         find_parent_process();
       }
-      if ((axelIntStatus == AXEL_INT) || (buttIntStatus == PIN_BUTTON) || (gerkIntStatus == GERKON_INT) || (magIntStatus == MAGNET_INT)) {
-        nosleep = 1;
-        newmillis = millis();
-        interrupt_time = newmillis - oldmillis;
-        BATT_TIME = BATT_TIME - interrupt_time;
-        if (BATT_TIME < 60000) {
-          BATT_TIME = SLEEP_TIME;
-          batteryVoltage = hwCPUVoltage();
-          batt_flag = 1;
-        }
+      if (configMode == 0) {
+        if ((axelIntStatus == AXEL_INT) || (buttIntStatus == PIN_BUTTON) || (gerkIntStatus == GERKON_INT) || (magIntStatus == MAGNET_INT)) {
+          nosleep = 1;
+          newmillis = millis();
+          interrupt_time = newmillis - oldmillis;
+          BATT_TIME = BATT_TIME - interrupt_time;
+          if (BATT_TIME < 60000) {
+            BATT_TIME = SLEEP_TIME;
+            batteryVoltage = hwCPUVoltage();
+            batt_flag = 1;
+          }
 
-        if (gerkIntStatus == GERKON_INT) {
-          send_Gerkon();
-          axel_time = millis();
-          nosleep = 0;
-        }
-
-        if (magIntStatus == MAGNET_INT) {
-          send_Magnet();
-          nosleep = 0;
-        }
-
-        if (axelIntStatus == AXEL_INT) {
-          if (millis() - axel_time0 >= 2000) {
-            send_Axel();
+          if (gerkIntStatus == GERKON_INT) {
+            send_Gerkon();
+            axel_time = millis();
             nosleep = 0;
-          } else {
-            if (digitalRead(GERKON_INT) == LOW) {
-              send_Gerkon();
-              axel_time = millis();
-              nosleep = 0;
-            }
           }
-        }
 
-        if (buttIntStatus == PIN_BUTTON) {
-          if (digitalRead(PIN_BUTTON) == 0 && button_flag == 0) {
-            button_flag = 1;
-            previousMillis = millis();
-            ledsOff();
+          if (magIntStatus == MAGNET_INT) {
+            send_Magnet();
+            nosleep = 0;
           }
-          if (digitalRead(PIN_BUTTON) == 0 && button_flag == 1) {
-            if ((millis() - previousMillis > 0) && (millis() - previousMillis <= 1750)) {
-              if (millis() - lightMillisR > 25) {
-                lightMillisR = millis();
-                onoff = !onoff;
-                digitalWrite(GREEN_LED, onoff);
+
+          if (axelIntStatus == AXEL_INT) {
+            if (millis() - axel_time0 >= 2000) {
+              send_Axel();
+              nosleep = 0;
+            } else {
+              if (digitalRead(GERKON_INT) == LOW) {
+                send_Gerkon();
+                axel_time = millis();
+                nosleep = 0;
               }
             }
-            if ((millis() - previousMillis > 1750) && (millis() - previousMillis <= 2000)) {
+          }
+
+          if (buttIntStatus == PIN_BUTTON) {
+            if (digitalRead(PIN_BUTTON) == 0 && button_flag == 0) {
+              button_flag = 1;
+              previousMillis = millis();
               ledsOff();
             }
-            if ((millis() - previousMillis > 2000) && (millis() - previousMillis <= 4000)) {
-              if (millis() - lightMillisR > 25) {
-                lightMillisR = millis();
-                onoff = !onoff;
-                digitalWrite(RED_LED, onoff);
+            if (digitalRead(PIN_BUTTON) == 0 && button_flag == 1) {
+              if ((millis() - previousMillis > 0) && (millis() - previousMillis <= 1750)) {
+                if (millis() - lightMillisR > 70) {
+                  lightMillisR = millis();
+                  onoff = !onoff;
+                  digitalWrite(BLUE_LED, onoff);
+                }
+              }
+              if ((millis() - previousMillis > 1750) && (millis() - previousMillis <= 2000)) {
+                ledsOff();
+              }
+              if ((millis() - previousMillis > 2000) && (millis() - previousMillis <= 3750)) {
+                if (millis() - lightMillisR > 50) {
+                  lightMillisR = millis();
+                  onoff = !onoff;
+                  digitalWrite(GREEN_LED, onoff);
+                }
+              }
+              if ((millis() - previousMillis > 3750) && (millis() - previousMillis <= 4000)) {
+                ledsOff();
+              }
+              if ((millis() - previousMillis > 4000) && (millis() - previousMillis <= 5750)) {
+                if (millis() - lightMillisR > 30) {
+                  lightMillisR = millis();
+                  onoff = !onoff;
+                  digitalWrite(RED_LED, onoff);
+                }
+              }
+              if (millis() - previousMillis > 5750) {
+                ledsOff();
               }
             }
-            if (millis() - previousMillis > 4000) {
-              ledsOff();
+
+            if (digitalRead(PIN_BUTTON) == 1 && button_flag == 1) {
+              if ((millis() - previousMillis <= 1750) && (button_flag == 1))
+              {
+                ledsOff();
+                blinky(2, 2, BLUE_LED);
+                button_flag = 0;
+                buttIntStatus = 0;
+                presentation();
+                nosleep = 0;
+              }
+              if ((millis() - previousMillis > 2000) && (millis() - previousMillis <= 3750) && (button_flag == 1))
+              {
+                ledsOff();
+                blinky(2, 2, GREEN_LED);
+                configMode = 1;
+                button_flag = 0;
+                configMillis = millis();
+                interrupt_Init(1);
+                NRF_POWER->DCDCEN = 0;
+                buttIntStatus = 0;
+                NRF5_ESB_startListening();
+                wait(50);
+              }
+
+              if ((millis() - previousMillis > 4000) && (millis() - previousMillis <= 5750) && (button_flag == 1))
+              {
+                ledsOff();
+                blinky(3, 3, RED_LED);
+                //new_device();
+              }
+
+              if ((((millis() - previousMillis > 1750) && (millis() - previousMillis <= 2000)) || ((millis() - previousMillis > 3750) && (millis() - previousMillis <= 4000)) || ((millis() - previousMillis > 5750))) && (button_flag == 1))
+              {
+                ledsOff();
+                nosleep = 0;
+                button_flag = 0;
+                buttIntStatus = 0;
+              }
             }
           }
-
-          if (digitalRead(PIN_BUTTON) == 1 && button_flag == 1) {
-            if ((millis() - previousMillis <= 1750) && (button_flag == 1))
-            {
-              ledsOff();
-              blinky(2, 2, BLUE_LED);
-              button_flag = 0;
-              buttIntStatus = 0;
-              presentation();
-              nosleep = 0;
-            }
-            if ((millis() - previousMillis > 2000) && (millis() - previousMillis <= 4000) && (button_flag == 1))
-            {
-              ledsOff();
-              blinky(3, 3, RED_LED);
-              //new_device();
-            }
-
-            if ((((millis() - previousMillis > 1750) && (millis() - previousMillis <= 2000)) || ((millis() - previousMillis > 4000))) && (button_flag == 1))
-            {
-              ledsOff();
-              nosleep = 0;
-              button_flag = 0;
-              buttIntStatus = 0;
-            }
-          }
+        } else {
+          batteryVoltage = hwCPUVoltage();
+          BATT_TIME = SLEEP_TIME;
+          sendBatteryStatus(1);
+          nosleep = 0;
         }
       } else {
-        batteryVoltage = hwCPUVoltage();
-        BATT_TIME = SLEEP_TIME;
-        sendBatteryStatus(1);
-        nosleep = 0;
+        if (millis() - configMillis > 30000) {
+          blinky(3, 3, GREEN_LED);
+          configMode = 0;
+          nosleep = 0;
+          interrupt_Init(0);
+          NRF_POWER->DCDCEN = 1;
+          wait(50);
+        }
       }
     } else {
       if (buttIntStatus == PIN_BUTTON) {
@@ -414,18 +484,25 @@ void board_Init() {
   NRF_UART0->ENABLE = 0;
   wait(5);
 #endif
-  NRF_NFCT->TASKS_DISABLE = 1;
-  NRF_NVMC->CONFIG = 1;
-  NRF_UICR->NFCPINS = 0;
-  NRF_NVMC->CONFIG = 0;
-  NRF_SAADC ->ENABLE = 0;
-  NRF_PWM0  ->ENABLE = 0;
-  NRF_PWM1  ->ENABLE = 0;
-  NRF_PWM2  ->ENABLE = 0;
-  NRF_TWIM1 ->ENABLE = 0;
-  NRF_TWIS1 ->ENABLE = 0;
+  //NRF_NFCT->TASKS_DISABLE = 1;
+  // NRF_NVMC->CONFIG = 1;
+  // NRF_UICR->NFCPINS = 0;
+  // NRF_NVMC->CONFIG = 0;
+  // NRF_SAADC ->ENABLE = 0;
+  // NRF_PWM0  ->ENABLE = 0;
+  // NRF_PWM1  ->ENABLE = 0;
+  // NRF_PWM2  ->ENABLE = 0;
+  // NRF_TWIM1 ->ENABLE = 0;
+  // NRF_TWIS1 ->ENABLE = 0;
   NRF_RADIO->TXPOWER = 8;
   wait(5);
+
+  conf_vibro_set = loadState(230);
+  if ((conf_vibro_set > 5) || (conf_vibro_set == 0)) {
+    conf_vibro_set = 2;
+    saveState(230, conf_vibro_set);
+  }
+
   blinky(1, 1, BLUE_LED);
 }
 
@@ -508,7 +585,7 @@ void gpiote_event_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_h
   }
   if (flag_nogateway_mode == 0) {
     if (AXEL_INT_MASK & event_pins_low_to_high) {
-      if ((axelIntStatus == 0) && (buttIntStatus == 0) && (gerkIntStatus == 0) && (magIntStatus == 0) && (door_status == 0)) {
+      if ((axelIntStatus == 0) && (buttIntStatus == 0) && (gerkIntStatus == 0) && (magIntStatus == 0) && (door_status == 1)) {
         axelIntStatus = AXEL_INT;
         axel_time0 = millis();
       }
@@ -519,7 +596,7 @@ void gpiote_event_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_h
       }
     }
     if (MAGNET_INT_MASK & event_pins_high_to_low) {
-      if ((axelIntStatus == 0) && (buttIntStatus == 0) && (gerkIntStatus == 0) && (magIntStatus == 0) && (door_status == 0)) {
+      if ((axelIntStatus == 0) && (buttIntStatus == 0) && (gerkIntStatus == 0) && (magIntStatus == 0) && (door_status == 1)) {
         magIntStatus = MAGNET_INT;
       }
     }
@@ -531,17 +608,13 @@ void sensors_Init() {
   Wire.begin();
   wait(100);
   lis2 = new LIS2DW12Sensor (&Wire);
-  lis2->ODRTEMP = ODR_12Hz5;  //ODR_1Hz6_LP_ONLY;
-  lis2->Enable_X();
-  wait(50);
-  lis2->Enable_Wake_Up_Detection();
-  wait(50);
+  vibro_Init();
   if (flag_nogateway_mode == 0) {
     if (digitalRead(GERKON_INT) == HIGH) {
-      door_status = 0;
+      door_status = 1;
       interrupt_Init(0);
     } else {
-      door_status = 1;
+      door_status = 0;
       interrupt_Init(1);
     }
     send(dwsMsg.set(door_status));
@@ -554,7 +627,7 @@ void sensors_Init() {
     magIntStatus = 0;
     sendBatteryStatus(0);
     wait(100);
-     blinky(2, 1, BLUE_LED);
+    blinky(2, 1, BLUE_LED);
     wait(100);
     blinky(2, 1, GREEN_LED);
     wait(100);
@@ -653,13 +726,13 @@ void send_Axel() {
 
 void send_Gerkon() {
   if (digitalRead(GERKON_INT) == HIGH) {
-    door_status = 0;
+    door_status = 1;
     interrupt_Init(0);
   } else {
-    door_status = 1;
+    door_status = 0;
     interrupt_Init(1);
   }
-  if (door_status == 0) {
+  if (door_status == 1) {
     blinky(1, 1, GREEN_LED);
   } else {
     blinky(1, 1, RED_LED);
@@ -842,11 +915,11 @@ void find_parent_process() {
 void sendBatteryStatus(bool start) {
   batt_cap = battery_level_in_percent(batteryVoltage);
   if (start == 1) {
-    if (batt_cap < old_batt_cap) {
-      sendBatteryLevel(battery_level_in_percent(batteryVoltage), 1);
-      wait(1500, C_INTERNAL, I_BATTERY_LEVEL);
-      old_batt_cap = batt_cap;
-    }
+    //if (batt_cap < old_batt_cap) {
+    sendBatteryLevel(battery_level_in_percent(batteryVoltage), 1);
+    wait(1500, C_INTERNAL, I_BATTERY_LEVEL);
+    old_batt_cap = batt_cap;
+    // }
   } else {
     sendBatteryLevel(battery_level_in_percent(batteryVoltage), 1);
     wait(1500, C_INTERNAL, I_BATTERY_LEVEL);
@@ -877,4 +950,45 @@ int16_t calculationRxQuality() {
     nRFRSSI = 100;
   }
   return nRFRSSI;
+}
+
+
+void receive(const MyMessage & message)
+{
+  if (message.sensor == LEVEL_SENSIV_V_SENS_CHILD_ID) {
+    if (message.type == V_VAR1) {
+      conf_vibro_set = message.getByte();
+      vibro_Init();
+      saveState(230, conf_vibro_set);
+      wait(200);
+      send(conf_vsensMsg.set(conf_vibro_set));
+      wait(200);
+      blinky(3, 3, GREEN_LED);
+      configMode = 0;
+      nosleep = 0;
+    }
+  }
+}
+
+
+void vibro_Init() {
+  if (conf_vibro_set == 1) {
+    lis2->ODRTEMP = ODR_1Hz6_LP_ONLY;
+  }
+  if (conf_vibro_set == 2) {
+    lis2->ODRTEMP = ODR_12Hz5;
+  }
+  if (conf_vibro_set == 3) {
+    lis2->ODRTEMP = ODR_25Hz;
+  }
+  if (conf_vibro_set == 4) {
+    lis2->ODRTEMP = ODR_100Hz;
+  }
+  if (conf_vibro_set == 5) {
+    lis2->ODRTEMP = ODR_200Hz;
+  }
+  lis2->Enable_X();
+  wait(100);
+  lis2->Enable_Wake_Up_Detection();
+  wait(100);
 }

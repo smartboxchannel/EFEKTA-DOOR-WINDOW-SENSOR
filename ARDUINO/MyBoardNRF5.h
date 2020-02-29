@@ -48,10 +48,19 @@ extern "C"
 #endif // __cplusplus
 
 // Number of pins defined in PinDescription array
+#if defined(NRF52840)
+#define GPIO_COUNT 2
+#define PINS_COUNT           (48u)
+#define NUM_DIGITAL_PINS     (48u)
+#define NUM_ANALOG_INPUTS    (8u)
+#define NUM_ANALOG_OUTPUTS   (8u)
+#else
+#define GPIO_COUNT 2
 #define PINS_COUNT           (32u)
 #define NUM_DIGITAL_PINS     (32u)
 #define NUM_ANALOG_INPUTS    (8u)
 #define NUM_ANALOG_OUTPUTS   (8u)
+#endif
 
 /* 
  *  LEDs
@@ -156,7 +165,7 @@ static const uint8_t SCK  = PIN_SPI_SCK;
 #define WIRE_INTERFACES_COUNT 2
 
 #define PIN_WIRE_SDA         (30u)
-#define PIN_WIRE_SCL         (31u)
+#define PIN_WIRE_SCL         (33u)
 
 //#define PIN_WIRE_SDA1        (15u)
 //#define PIN_WIRE_SCL1        (16u)
