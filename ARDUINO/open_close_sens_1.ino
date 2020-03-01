@@ -455,14 +455,14 @@ void loop() {
 void blinky(uint8_t pulses, uint8_t repit, uint8_t ledColor) {
   for (int x = 0; x < repit; x++) {
     if (x > 0) {
-      wait(150);
+     sleep(150);
     }
     for (int i = 0; i < pulses; i++) {
       if (i > 0) {
-        wait(40);
+        sleep(40);
       }
       digitalWrite(ledColor, LOW);
-      wait(10);
+      sleep(10);
       digitalWrite(ledColor, HIGH);
     }
   }
@@ -690,10 +690,10 @@ void send_Axel() {
     blinky(2, 1, RED_LED);
 
     send_a = send(vibroMsg.set(vibro));
-    wait(50);
+    //wait(30);
     if (send_a == false) {
       send_a = send(vibroMsg.set(vibro));
-      wait(100);
+      //wait(70);
     }
     if (send_a == true) {
       err_delivery_beat = 0;
@@ -738,13 +738,13 @@ void send_Gerkon() {
     blinky(1, 1, RED_LED);
   }
   send_a = send(dwsMsg.set(door_status));
-  wait(50);
+  //wait(30);
   if (send_a == false) {
     send_a = send(dwsMsg.set(door_status));
-    wait(100);
+    //wait(100);
     if (send_a == false) {
       send_a = send(dwsMsg.set(door_status));
-      wait(150);
+      //wait(150);
     }
   }
   if (send_a == true) {
@@ -779,10 +779,10 @@ void send_Magnet() {
   blinky(2, 1, BLUE_LED);
   blinky(2, 1, RED_LED);
   send_a = send(mMsg.set(magnet_status));
-  wait(50);
+  //wait(50);
   if (send_a == false) {
     send_a = send(mMsg.set(magnet_status));
-    wait(100);
+    //wait(100);
   }
   if (send_a == true) {
     err_delivery_beat = 0;
