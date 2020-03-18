@@ -165,7 +165,7 @@ static const uint8_t SCK  = PIN_SPI_SCK;
 #define WIRE_INTERFACES_COUNT 2
 
 #define PIN_WIRE_SDA         (30u)
-#define PIN_WIRE_SCL         (33u)
+#define PIN_WIRE_SCL         (31u)
 
 //#define PIN_WIRE_SDA1        (15u)
 //#define PIN_WIRE_SCL1        (16u)
