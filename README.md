@@ -4,9 +4,9 @@
 
 ### (MC50SFA) nRF52811, nRF52810, nRF52832, (E73 2G4M08S1C) nRF52840
 
-#### Donate me :)
+#### Donate me, ..I will make more and faster open devices :)
 
-PayPal: altigraph@yandex.com
+PayPal: altigraph@ya.ru
 
 Yandex Money: 4100140180242
 
