@@ -6,19 +6,15 @@
 
 #### Donate me, ..I will make more and faster open devices :)
 
+VISA: 4048415000506242
+
 PayPal: altigraph@ya.ru
 
 Yandex Money: 4100140180242
 
 WebMoney: Z722291985192, X133903637383, R494367503336
 
-Bitcoin: bc1q3prwstl54j3a5j58esepfkyrqfjn0ydr8p3vc7
-
-Also you can buy:
-
-fully assembled(only the reed switch) - $15.9
-
-fully assembled(reed switch, accelerometer, magnetic field sensor) - $19.9
+Bitcoin: bc1q4ejf52gfk0p6z8qahq3f7qz9jpm3lmjq9c7rcr
 
 Contact: hello@efektalab.com
 
