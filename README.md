@@ -4,19 +4,7 @@
 
 ### (MC50SFA) nRF52811, nRF52810, nRF52832, (E73 2G4M08S1C) nRF52840
 
-#### Donate me, ..I will make more and faster open devices :)
-
-VISA: 4048415000506242
-
-PayPal: altigraph@ya.ru
-
-Yandex Money: 4100140180242
-
-WebMoney: Z722291985192, X133903637383, R494367503336
-
-Bitcoin: bc1q4ejf52gfk0p6z8qahq3f7qz9jpm3lmjq9c7rcr
-
-Contact: hello@efektalab.com
+#### Don't donate to me, it doesn't work in this world: https://paypal.me/efektalab , just buy:
 
 Video: https://youtu.be/4p1JGMze4s0
 
